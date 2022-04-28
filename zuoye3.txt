@@ -1,0 +1,12 @@
+#推送和启动镜像
+
+docker tag httpserver:v3 374432576/zuoye:v3
+docker push 374432576/zuoye:v3
+docker run -d -p 8088:8080 httpserver:v3
+
+
+
+#通过 nsenter 进入容器查看 IP 配置
+
+docker inspect 容器id | grep -i pid
+nsenter -t 容器pid -n ip a
