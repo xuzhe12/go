@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http
+  template:
+    metadata:
+      labels:
+        app: http
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: httpserver
+          image: 374432576/zuoye:v3
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: bootstrap
+            mountPath: /app/bootstrap.yml
+          resources:
+            requests:
+                cpu: 100m
+                memory: 100Mi
+            limits:
+                cpu: 100m
+                memory: 100Mi
+          readinessProbe:
+            exec:
+              command:
+                - cat
+                - /app/zuoye2
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
+      volumes:
+       - name: bootstrap
+         configMap:
+           name: bootstrap.yml
